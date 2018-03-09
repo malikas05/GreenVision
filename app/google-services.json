@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "979774352417",
+    "firebase_url": "https://green-5db29.firebaseio.com",
+    "project_id": "green-5db29",
+    "storage_bucket": "green-5db29.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:979774352417:android:a82fde1730d1e711",
+        "android_client_info": {
+          "package_name": "com.malikas.greenvision"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "979774352417-oprk6vsjdbqauvf989r11d2c3gij864t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.malikas.greenvision",
+            "certificate_hash": "5f5237f3d5b98f7ee6545801ca4b463d64992585"
+          }
+        },
+        {
+          "client_id": "979774352417-haofq2tct9gjbsdcf2kfg25ge0e208sm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBL5AYrqkOLKAZ5G3Y8uE_eLvSTMJVyWiM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "979774352417-haofq2tct9gjbsdcf2kfg25ge0e208sm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
