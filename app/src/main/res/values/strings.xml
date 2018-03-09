@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Green Vision</string>
+    <string name="loading">Please wait while data is loading.</string>
 </resources>
