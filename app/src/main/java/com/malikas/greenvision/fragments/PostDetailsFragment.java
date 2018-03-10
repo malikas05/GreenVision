@@ -113,6 +113,7 @@ public class PostDetailsFragment extends Fragment {
         postContributersList = ( RecyclerView ) v.findViewById(R.id.postAllContributers);
         postContributersList.setLayoutManager( new LinearLayoutManager(getActivity()));
         contributerAdapter   = new ContributerAdapter( dataset , getContext() );
+        postContributersList.setAdapter(contributerAdapter);
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
