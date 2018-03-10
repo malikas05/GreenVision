@@ -7,6 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -23,11 +28,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.malikas.greenvision.data.DataApp;
 import com.malikas.greenvision.entities.User;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -50,15 +54,22 @@ public class SigninActivity extends AppCompatActivity {
 
     // UI variables
     private ProgressDialog mProgressDialog;
+    @BindView(R.id.startup_logo)
+    ImageView startup_logo;
+    @BindView(R.id.welcomeText)
+    TextView welcomeText;
+    @BindView(R.id.google_logo)
+    ImageView google_logo;
+    @BindView(R.id.sign_in_button)
+    Button sign_in_button;
     //
+
+    private Animation myanim;
 
     //lifecycle methods
     @Override
     protected void onStart() {
         super.onStart();
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
     }
 
     @Override
@@ -82,8 +93,17 @@ public class SigninActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         dbRef = database.getReference("Users");
+
+        myanim = AnimationUtils.loadAnimation(this, R.anim.mytransition);
+        startup_logo.startAnimation(myanim);
+        checkIfAnimFinished();
     }
     //
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 
     //Listeners
     @OnClick(R.id.sign_in_button)
@@ -134,6 +154,37 @@ public class SigninActivity extends AppCompatActivity {
         }
     }
     //
+
+    private void checkIfAnimFinished(){
+        myanim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                if (currentUser == null) {
+                    showLoginView();
+                }
+                else {
+                    updateUI(currentUser);
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
+    private void showLoginView(){
+        welcomeText.setVisibility(View.GONE);
+        google_logo.setVisibility(View.VISIBLE);
+        sign_in_button.setVisibility(View.VISIBLE);
+    }
 
     // update UI if user signed in
     public void updateUI(FirebaseUser currentUser) {

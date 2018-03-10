@@ -146,6 +146,9 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
                                 .withTextColor(getResources().getColor(R.color.colorBlack)),
                         new SecondaryDrawerItem().withIdentifier(2)
                                 .withName("Post Details Test")
+                                .withTextColor(getResources().getColor(R.color.colorBlack)),
+                        new SecondaryDrawerItem().withIdentifier(3)
+                                .withName("Display posts")
                                 .withTextColor(getResources().getColor(R.color.colorBlack))
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -154,10 +157,14 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
                         drawer.closeDrawer();
                         switch ((int)drawerItem.getIdentifier()){
                             case 1:
-                                changeFragment(2);
+                                Intent signInActivity = new Intent(HomeActivity.this, CreatePostActivity.class);
+                                startActivity(signInActivity);
                                 return true;
                             case 2:
                                 changeFragment( 3 );
+                                return true;
+                            case 3:
+                                changeFragment( 1 );
                                 return true;
                             default:
                                 return true;
@@ -171,7 +178,7 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
 
     //helper methods
     protected Fragment createFragment(){
-        return new CreatePostFragment();
+        return new PostFragment();
     }
 
     //change fragment when user chooses different fragments

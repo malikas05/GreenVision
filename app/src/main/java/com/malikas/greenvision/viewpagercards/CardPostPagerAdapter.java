@@ -1,5 +1,6 @@
 package com.malikas.greenvision.viewpagercards;
 
+import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.malikas.greenvision.R;
 import com.malikas.greenvision.entities.Post;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +26,22 @@ public class CardPostPagerAdapter extends PagerAdapter implements CardAdapter {
     private List<CardView> mViews;
     private List<Post> mData;
     private float mBaseElevation;
+    private Context context;
 
-    public CardPostPagerAdapter() {
+    public CardPostPagerAdapter(Context context) {
+        this.context = context;
         mData = new ArrayList<>();
         mViews = new ArrayList<>();
     }
 
     public void addCardItem(Post item) {
         mViews.add(null);
-        mData.add(item);
+        mData.add(0, item);
+    }
+
+    public void addCardItemToEnd(Post item, long pos) {
+        mViews.add(null);
+        mData.add((int) pos, item);
     }
 
     public float getBaseElevation() {
@@ -88,6 +97,7 @@ public class CardPostPagerAdapter extends PagerAdapter implements CardAdapter {
 
             }
         });
+        Picasso.with(context).load(item.getImage()).into(postImage);
     }
 
 }

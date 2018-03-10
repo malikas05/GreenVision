@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlNormal">@android:color/white</item>
     </style>
 
     // style for toolbar and hamburger icon
@@ -20,5 +21,17 @@
         <item name="color">@android:color/white</item>
     </style>
     //
+
+    <style name="TitleTextView">
+        <item name="android:fontFamily">@font/neuzeit_bold</item>
+        <item name="android:textSize">48sp</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="EditTextStyle" parent="TitleTextView">
+        <item name="android:fontFamily">@font/neuzeit</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/colorBlack</item>
+    </style>
 
 </resources>

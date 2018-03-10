@@ -10,35 +10,45 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.malikas.greenvision.R;
-//import com.malikas.greenvision.viewpagercards.CardPostPagerAdapter;
-//import com.malikas.greenvision.viewpagercards.ShadowTransformer;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import com.malikas.greenvision.entities.Post;
+import com.malikas.greenvision.viewpagercards.CardPostPagerAdapter;
+import com.malikas.greenvision.viewpagercards.ShadowTransformer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-import static android.app.Activity.RESULT_OK;
-
 
 public class PostFragment extends Fragment {
 
     public Callbacks listener;
-//    private CardPostPagerAdapter postPagerAdapter;
-//    private ShadowTransformer mCardShadowTransformer;
+    private CardPostPagerAdapter postPagerAdapter;
+    private ShadowTransformer mCardShadowTransformer;
+    private ProgressDialog mProgressDialog;
+    private int itemPosition = 0;
+    private String mLastKey = "", mPrevKey = "";
 
-//    @BindView(R.id.viewPagerPost)
+    //firebase realtime db reference
+    private FirebaseDatabase database;
+    private DatabaseReference dbRef;
+    // Storage Firebase
+    private StorageReference mStorageRef;
+
+    @BindView(R.id.viewPagerPost)
     ViewPager viewPagerPost;
 
     public interface Callbacks{
@@ -72,24 +82,135 @@ public class PostFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        View v = inflater.inflate(R.layout.fragment_all_posts, container, false);
-//        ButterKnife.bind(this, v);
+        View v = inflater.inflate(R.layout.fragment_all_posts, container, false);
+        ButterKnife.bind(this, v);
 
-//        postPagerAdapter = new CardPostPagerAdapter();
-//        for (CardEmojiItem cardEmojiItem : DataApp.getInstance().getEmojis()){
-//            postPagerAdapter.addCardItem(cardEmojiItem);
-//        }
-//
-//        mCardShadowTransformer = new ShadowTransformer(mViewPager, mCardAdapter);
-//
-//        viewPagerPost.setAdapter(postPagerAdapter);
-//        viewPagerPost.setPageTransformer(false, mCardShadowTransformer);
-//        viewPagerPost.setOffscreenPageLimit(3);
-//        viewPagerPost.setCurrentItem(2);
+        postPagerAdapter = new CardPostPagerAdapter(getContext());
+        mCardShadowTransformer = new ShadowTransformer(viewPagerPost, postPagerAdapter);
 
- //      return v;
-        return null;
+        showProgressDialog();
+
+        loadPosts();
+
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+
+        viewPagerPost.setAdapter(postPagerAdapter);
+        viewPagerPost.setPageTransformer(false, mCardShadowTransformer);
+        viewPagerPost.setOffscreenPageLimit(3);
+        viewPagerPost.setCurrentItem(2);
+
+        viewPagerPost.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == postPagerAdapter.getCount() - 2) {
+                    loadMorePosts();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        hideProgressDialog();
+
+        return v;
     }
     //
 
+    private void loadMorePosts(){
+        showProgressDialog();
+        Query postQuery = dbRef.orderByChild("timestamp").endAt(mLastKey).limitToLast(10);
+        postQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long size = dataSnapshot.getChildrenCount();
+                int count = 0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Post post = snapshot.getValue(Post.class);
+                    String imageUrl = mStorageRef.child(dataSnapshot.getKey()).getDownloadUrl().toString();
+                    post.setImage(imageUrl);
+
+                    if (!mPrevKey.equals(dataSnapshot.getKey())) {
+                        postPagerAdapter.addCardItemToEnd(post, size - count++);
+                        itemPosition++;
+                    }
+                    else {
+                        mPrevKey = mLastKey;
+                    }
+
+                    if (itemPosition == 1){
+                        mLastKey = dataSnapshot.getKey();
+                    }
+                }
+                postPagerAdapter.notifyDataSetChanged();
+                hideProgressDialog();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void loadPosts(){
+        database = FirebaseDatabase.getInstance();
+        dbRef = database.getReference("Post");
+        Query postQuery = dbRef.orderByChild("timestamp").limitToLast(10);
+
+        postQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    itemPosition++;
+
+                    if (itemPosition == 1){
+                        mLastKey = dataSnapshot.getKey();
+                        mPrevKey = dataSnapshot.getKey();
+                    }
+
+                    Post post = snapshot.getValue(Post.class);
+                    final Uri imageUrl;
+//
+//                    mStorageRef.child("post_images/"+dataSnapshot.getKey()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                        @Override
+//                        public void onSuccess(Uri uri) {
+//                            Log.d("postimageurl", uri.toString());
+//                        }
+//                    });
+
+//                    post.setImage(imageUrl);
+                    postPagerAdapter.addCardItem(post);
+                }
+                postPagerAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    //helper methods
+    //show/hide progress dialog
+    public void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(getActivity());
+            mProgressDialog.setMessage(getString(R.string.loading));
+            mProgressDialog.setIndeterminate(true);
+        }
+
+        mProgressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
+    //
 }
