@@ -219,7 +219,7 @@ public class CreatePostFragment extends Fragment {
         pushedKey.setValue(post);
         StorageReference image_filePathFB = mStorageRef.child(pushedKey.getKey());
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
-        photo.compress(Bitmap.CompressFormat.PNG, 100, bao); // bmp is bitmap from user image file
+        photo.compress(Bitmap.CompressFormat.PNG, 50, bao); // bmp is bitmap from user image file
         byte[] byteArray = bao.toByteArray();
         image_filePathFB.putBytes(byteArray).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
