@@ -27,6 +27,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.malikas.greenvision.R;
 import com.malikas.greenvision.adapters.ContributerAdapter;
+import com.malikas.greenvision.data.DataApp;
 import com.malikas.greenvision.entities.Contributer;
 import com.malikas.greenvision.entities.Post;
 import com.malikas.greenvision.entities.User;
@@ -119,7 +120,6 @@ public class PostDetailsFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-
                 Post post = dataSnapshot.getValue( Post.class );
 
                 postTitle.setText( post.getTitle() );
@@ -191,7 +191,6 @@ public class PostDetailsFragment extends Fragment {
                 Iterable<DataSnapshot> contributerIterable = dataSnapshot.getChildren();
                 Iterator<DataSnapshot> it = contributerIterable.iterator();
 
-               // Toast.makeText(getContext(),  , Toast.LENGTH_SHORT).show();
 
                 while( it.hasNext() ){
 
@@ -199,14 +198,14 @@ public class PostDetailsFragment extends Fragment {
 
                     DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users/"+contributer.getUserId());
 
-                    Toast.makeText(getContext(), "worked?", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getContext(), "worked?", Toast.LENGTH_SHORT).show();
 
                     userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             User user = dataSnapshot.getValue( User.class );
                             dataset.add(user);
-                            Toast.makeText( getContext(), dataset.get(0).getPersonName() , Toast.LENGTH_LONG ).show();
+                          //  Toast.makeText( getContext(), dataset.get(0).getPersonName() , Toast.LENGTH_LONG ).show();
                             contributerAdapter.notifyDataSetChanged();
                         }
 
@@ -229,8 +228,53 @@ public class PostDetailsFragment extends Fragment {
         });
 
 
+        postContribute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDatabase = FirebaseDatabase.getInstance().getReference().child("Contributer/-L7DFBuvdYjzbnqQcae2");
+                mDatabase.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Iterable<DataSnapshot> contributerIterable = dataSnapshot.getChildren();
+                        Iterator<DataSnapshot> it = contributerIterable.iterator();
+
+                        boolean alreadyContributing = false;
+                        String userId = DataApp.getInstance().getCurrentUser().getUid();
+                        while( it.hasNext() && !alreadyContributing ){
+                            Contributer contributer = it.next().child("Contributer").getValue( Contributer.class );
+                            if( contributer.getUserId() == userId ) {
+                                alreadyContributing = true;
+                            }
+                        }
+
+                        if( !alreadyContributing ) {
+                            Contributer contributer = new Contributer(DataApp.getInstance().getCurrentUser().getUid());
+                            DatabaseReference contributeRefrence = FirebaseDatabase.getInstance().getReference().child("Contributer");
+                            contributeRefrence.child("Contributer/-L7DFBuvdYjzbnqQcae2").push().child(contributeRefrence.getKey()).setValue(contributer);
+                        }
+                        else {
+                            Toast.makeText(getContext() , "You are already contributing to the post!" , Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                // check if the user is already a contributer,
+                // option one : loop through all contributer data looking for a user ID ? maybe 50 -1000 contributers?
+
+
+
+            }
+        });
+
+
         return v;
     }
+
 
 
 }

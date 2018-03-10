@@ -28,6 +28,7 @@ import com.malikas.greenvision.data.DataApp;
 import com.malikas.greenvision.fragments.CreatePostFragment;
 import com.malikas.greenvision.fragments.PostDetailsFragment;
 import com.malikas.greenvision.fragments.PostFragment;
+import com.malikas.greenvision.fragments.UserProfileFragment;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -149,6 +150,9 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
                                 .withTextColor(getResources().getColor(R.color.colorBlack)),
                         new SecondaryDrawerItem().withIdentifier(3)
                                 .withName("Display posts")
+                                .withTextColor(getResources().getColor(R.color.colorBlack)),
+                        new SecondaryDrawerItem().withIdentifier(4)
+                                .withName("User Profile")
                                 .withTextColor(getResources().getColor(R.color.colorBlack))
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -166,6 +170,8 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
                             case 3:
                                 changeFragment( 1 );
                                 return true;
+                            case 4:
+                                changeFragment(4);
                             default:
                                 return true;
                         }
@@ -194,6 +200,9 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
         }
         else if (fragmentNum == 3) {
             ft.replace(R.id.frame, new PostDetailsFragment());
+        }
+        else if (fragmentNum == 4) {
+            ft.replace(R.id.frame, new UserProfileFragment());
         }
         ft.addToBackStack(null);
         ft.setTransition(android.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE);
