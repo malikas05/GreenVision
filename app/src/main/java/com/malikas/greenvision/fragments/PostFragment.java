@@ -30,6 +30,9 @@ import com.malikas.greenvision.entities.Post;
 import com.malikas.greenvision.viewpagercards.CardPostPagerAdapter;
 import com.malikas.greenvision.viewpagercards.ShadowTransformer;
 
+import java.util.Collections;
+import java.util.Iterator;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -107,9 +110,9 @@ public class PostFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
-                if (position == postPagerAdapter.getCount() - 2) {
-                    loadMorePosts();
-                }
+//                if (position == postPagerAdapter.getCount() - 2) {
+//                    loadMorePosts();
+//                }
             }
 
             @Override
@@ -133,9 +136,17 @@ public class PostFragment extends Fragment {
                 long size = dataSnapshot.getChildrenCount();
                 int count = 0;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Post post = snapshot.getValue(Post.class);
-                    String imageUrl = mStorageRef.child(dataSnapshot.getKey()).getDownloadUrl().toString();
-                    post.setImage(imageUrl);
+                    final Post post = snapshot.getValue(Post.class);
+                    StorageReference imageRef = mStorageRef.child("post_images/"+snapshot.getKey());
+                    imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            post.setImage(uri.toString());
+                            postPagerAdapter.addCardItem(post);
+                            postPagerAdapter.notifyDataSetChanged();
+                            Log.d("postimageurl", uri.toString());
+                        }
+                    });
 
                     if (!mPrevKey.equals(dataSnapshot.getKey())) {
                         postPagerAdapter.addCardItemToEnd(post, size - count++);
@@ -159,35 +170,63 @@ public class PostFragment extends Fragment {
     }
 
     private void loadPosts(){
+        showProgressDialog();
         database = FirebaseDatabase.getInstance();
         dbRef = database.getReference("Post");
-        Query postQuery = dbRef.orderByChild("timestamp").limitToLast(10);
 
-        postQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    itemPosition++;
 
-                    if (itemPosition == 1){
-                        mLastKey = dataSnapshot.getKey();
-                        mPrevKey = dataSnapshot.getKey();
-                    }
+                Iterable<DataSnapshot> iterableData = dataSnapshot.getChildren();
+                Iterator<DataSnapshot> it = iterableData.iterator();
 
-                    Post post = snapshot.getValue(Post.class);
-                    final Uri imageUrl;
+
+
+                while( it.hasNext() ) {
+
+                    final DataSnapshot ds = it.next();
+
+                    final Post post = ds.getValue( Post.class );
+
+                    StorageReference imageRef = mStorageRef.child("post_images/"+ds.getKey());
+                    imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            post.setImage(uri.toString());
+                            postPagerAdapter.addCardItem(post);
+                            postPagerAdapter.notifyDataSetChanged();
+                            Log.d("postimageurl", uri.toString());
+                        }
+                    });
+
+                }
+
+
+                //for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    itemPosition++;
 //
-//                    mStorageRef.child("post_images/"+dataSnapshot.getKey()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                    if (itemPosition == 1){
+//                        mLastKey = dataSnapshot.getKey();
+//                        mPrevKey = dataSnapshot.getKey();
+//                    }
+
+                    // Post post = snapshot.getValue(Post.class);
+
+//                    StorageReference imageRef = mStorageRef.child("post_images/"+snapshot.getKey());
+//                    imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
 //                        @Override
 //                        public void onSuccess(Uri uri) {
+//                            post.setImage(uri.toString());
+//                            postPagerAdapter.addCardItem(post);
+//                            postPagerAdapter.notifyDataSetChanged();
 //                            Log.d("postimageurl", uri.toString());
 //                        }
 //                    });
-
-//                    post.setImage(imageUrl);
-                    postPagerAdapter.addCardItem(post);
-                }
-                postPagerAdapter.notifyDataSetChanged();
+//                    postPagerAdapter.addCardItem(post);
+                //    postPagerAdapter.notifyDataSetChanged();
+                //}
+                //hideProgressDialog();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {

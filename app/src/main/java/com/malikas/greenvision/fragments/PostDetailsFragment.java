@@ -98,7 +98,7 @@ public class PostDetailsFragment extends Fragment {
 
         dataset = new ArrayList<>();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Post/-L7DFBuvdYjzbnqQcae2");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Post/-L7EGHVNjhq7OYTrXaWB");
 
 
         postTitle = (TextView) v.findViewById(R.id.postTitle);

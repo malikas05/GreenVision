@@ -196,6 +196,7 @@ public class CreatePostActivity extends AppCompatActivity  {
         if (location != null && checkFields()){
             showProgressDialog();
             uploadPostToFirebase(location);
+            finish();
         }
         else {
             Toast.makeText(this, "Please input the fields.", Toast.LENGTH_SHORT).show();

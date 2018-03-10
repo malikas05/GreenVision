@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.malikas.greenvision.R;
@@ -15,6 +16,8 @@ import com.malikas.greenvision.entities.Post;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -36,7 +39,7 @@ public class CardPostPagerAdapter extends PagerAdapter implements CardAdapter {
 
     public void addCardItem(Post item) {
         mViews.add(null);
-        mData.add(0, item);
+        mData.add(item);
     }
 
     public void addCardItemToEnd(Post item, long pos) {
@@ -87,17 +90,29 @@ public class CardPostPagerAdapter extends PagerAdapter implements CardAdapter {
     }
 
     private void bind(Post item, View view) {
-        ImageView postImage = (ImageView) view.findViewById(R.id.postImage);
+        final RelativeLayout postLayout = (RelativeLayout) view.findViewById(R.id.postLayout);
         TextView postTitle = (TextView) view.findViewById(R.id.postTitle);
-        Button postOpen = (Button) view.findViewById(R.id.postOpen);
         postTitle.setText(item.getTitle());
-        postOpen.setOnClickListener(new View.OnClickListener() {
+        postLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
         });
-        Picasso.with(context).load(item.getImage()).into(postImage);
+        final ImageView img = new ImageView(context);
+        Picasso.with(img.getContext())
+                .load(item.getImage())
+                .into(img, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        postLayout.setBackground(img.getDrawable());
+                    }
+
+                    @Override
+                    public void onError() {
+                    }
+                });
     }
+
 
 }

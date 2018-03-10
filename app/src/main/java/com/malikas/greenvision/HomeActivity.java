@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.malikas.greenvision.data.DataApp;
 import com.malikas.greenvision.fragments.CreatePostFragment;
+import com.malikas.greenvision.fragments.MapPostFragment;
 import com.malikas.greenvision.fragments.PostDetailsFragment;
 import com.malikas.greenvision.fragments.PostFragment;
 import com.malikas.greenvision.fragments.UserProfileFragment;
@@ -44,6 +45,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class HomeActivity extends AppCompatActivity implements PostFragment.Callbacks {
 
@@ -196,7 +198,7 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
             ft.replace(R.id.frame, new PostFragment());
         }
         else if (fragmentNum == 2) {
-            ft.replace(R.id.frame, new CreatePostFragment());
+            ft.replace(R.id.frame, new MapPostFragment());
         }
         else if (fragmentNum == 3) {
             ft.replace(R.id.frame, new PostDetailsFragment());
@@ -235,4 +237,21 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
         }
     }
     //
+
+    //Listeners
+    @OnClick(R.id.tabCreatePost)
+    public void tabCreatePostClicked(){
+        Intent signInActivity = new Intent(HomeActivity.this, CreatePostActivity.class);
+        startActivity(signInActivity);
+    }
+
+    @OnClick(R.id.tabPagerView)
+    public void tabPagerViewClicked(){
+        changeFragment(1);
+    }
+
+    @OnClick(R.id.tabMapView)
+    public void tabMapViewClicked(){
+        changeFragment(2);
+    }
 }

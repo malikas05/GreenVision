@@ -1,6 +1,7 @@
 package com.malikas.greenvision.data;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.malikas.greenvision.entities.Post;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +12,9 @@ import java.util.List;
 
 public class DataApp {
 
-    private FirebaseUser currentUser;
     private static DataApp instance;
+
+    private FirebaseUser currentUser;
 
     public static DataApp getInstance(){
         if (instance == null){
@@ -31,5 +33,6 @@ public class DataApp {
     public void setCurrentUser(FirebaseUser currentUser) {
         this.currentUser = currentUser;
     }
+
 
 }
