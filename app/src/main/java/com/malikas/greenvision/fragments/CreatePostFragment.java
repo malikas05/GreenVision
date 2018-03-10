@@ -36,12 +36,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.malikas.greenvision.R;
 import com.malikas.greenvision.data.DataApp;
+import com.malikas.greenvision.entities.Contributer;
 import com.malikas.greenvision.entities.Post;
 
 import java.io.ByteArrayOutputStream;
@@ -216,10 +216,10 @@ public class CreatePostFragment extends Fragment {
 
     private void uploadPostToFirebase(LatLng location){
         Post post = new Post(createPostTitle.getText().toString(), createPostDesc.getText().toString(),
-                createPostLocationText.getText().toString(), location.latitude, location.longitude);
+                createPostLocationText.getText().toString(), location.latitude, location.longitude, DataApp.getInstance().getCurrentUser().getUid() );
         DatabaseReference pushedKey = dbRef.push();
         pushedKey.setValue(post);
-        StorageReference image_filePathFB = mStorageRef.child(pushedKey.getKey() + ".png");
+        StorageReference image_filePathFB = mStorageRef.child(pushedKey.getKey());
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         photo.compress(Bitmap.CompressFormat.PNG, 100, bao); // bmp is bitmap from user image file
         byte[] byteArray = bao.toByteArray();
@@ -234,6 +234,12 @@ public class CreatePostFragment extends Fragment {
                 hideProgressDialog();
             }
         });
+
+        Contributer contributer = new Contributer( pushedKey.getKey() , DataApp.getInstance().getCurrentUser().getUid() );
+        DatabaseReference contributeRefrence = database.getReference().child( "Contributer" );
+        contributeRefrence.push();
+        contributeRefrence.setValue( contributer );
+
     }
 
     private String getAddress(Location location){

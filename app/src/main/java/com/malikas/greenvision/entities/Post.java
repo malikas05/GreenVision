@@ -9,23 +9,27 @@ import com.google.firebase.database.ServerValue;
 
 public class Post {
 
+
     private String title;
     private String description;
     private String address;
     private double lat, lon;
     private String image;
+    private String userId;
 
     private final Object timestamp = ServerValue.TIMESTAMP;
 
     public Post() {
     }
 
-    public Post(String title, String description, String address, double lat, double lon) {
+
+    public Post(String title, String description, String address, double lat, double lon, String userId) {
         this.title = title;
         this.description = description;
         this.address = address;
         this.lat = lat;
         this.lon = lon;
+        this.userId = userId;
     }
 
     public String getTitle() {
@@ -75,6 +79,16 @@ public class Post {
     public void setImage(String image) {
         this.image = image;
     }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+
 
     Object getTimestamp() {
         return timestamp;

@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.malikas.greenvision.data.DataApp;
 import com.malikas.greenvision.fragments.CreatePostFragment;
+import com.malikas.greenvision.fragments.PostDetailsFragment;
 import com.malikas.greenvision.fragments.PostFragment;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -142,6 +143,9 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
                 .addDrawerItems(
                         new SecondaryDrawerItem().withIdentifier(1)
                                 .withName("Create Post")
+                                .withTextColor(getResources().getColor(R.color.colorBlack)),
+                        new SecondaryDrawerItem().withIdentifier(2)
+                                .withName("Post Details Test")
                                 .withTextColor(getResources().getColor(R.color.colorBlack))
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -151,6 +155,9 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
                         switch ((int)drawerItem.getIdentifier()){
                             case 1:
                                 changeFragment(2);
+                                return true;
+                            case 2:
+                                changeFragment( 3 );
                                 return true;
                             default:
                                 return true;
@@ -178,9 +185,9 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
         else if (fragmentNum == 2) {
             ft.replace(R.id.frame, new CreatePostFragment());
         }
-//        else if (fragmentNum == 3) {
-//            ft.replace(R.id.frame, new AccountFragment());
-//        }
+        else if (fragmentNum == 3) {
+            ft.replace(R.id.frame, new PostDetailsFragment());
+        }
         ft.addToBackStack(null);
         ft.setTransition(android.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
