@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.malikas.greenvision.R;
+import com.malikas.greenvision.viewpagercards.CardPostPagerAdapter;
+import com.malikas.greenvision.viewpagercards.ShadowTransformer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,6 +38,11 @@ import static android.app.Activity.RESULT_OK;
 public class PostFragment extends Fragment {
 
     public Callbacks listener;
+    private CardPostPagerAdapter postPagerAdapter;
+    private ShadowTransformer mCardShadowTransformer;
+
+    @BindView(R.id.viewPagerPost)
+    ViewPager viewPagerPost;
 
     public interface Callbacks{
         void changeFragment(int fragmentNum);
@@ -67,8 +75,20 @@ public class PostFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_home, container, false);
+        View v = inflater.inflate(R.layout.fragment_all_posts, container, false);
         ButterKnife.bind(this, v);
+
+//        postPagerAdapter = new CardPostPagerAdapter();
+//        for (CardEmojiItem cardEmojiItem : DataApp.getInstance().getEmojis()){
+//            postPagerAdapter.addCardItem(cardEmojiItem);
+//        }
+//
+//        mCardShadowTransformer = new ShadowTransformer(mViewPager, mCardAdapter);
+//
+//        viewPagerPost.setAdapter(postPagerAdapter);
+//        viewPagerPost.setPageTransformer(false, mCardShadowTransformer);
+//        viewPagerPost.setOffscreenPageLimit(3);
+//        viewPagerPost.setCurrentItem(2);
 
         return v;
     }

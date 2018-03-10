@@ -1,5 +1,8 @@
 package com.malikas.greenvision.entities;
 
+import com.google.firebase.database.Exclude;
+import com.google.firebase.database.ServerValue;
+
 /**
  * Created by Malik on 2018-03-09.
  */
@@ -11,6 +14,8 @@ public class Post {
     private String address;
     private double lat, lon;
     private String image;
+
+    private final Object timestamp = ServerValue.TIMESTAMP;
 
     public Post() {
     }
@@ -69,5 +74,14 @@ public class Post {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    Object getTimestamp() {
+        return timestamp;
+    }
+
+    @Exclude
+    public long timestamp() {
+        return (long) timestamp;
     }
 }
