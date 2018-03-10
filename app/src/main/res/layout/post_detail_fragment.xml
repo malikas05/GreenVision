@@ -40,6 +40,14 @@
                 android:layout_below="@id/postDescription"
                 />
 
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/postAllContributers"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_below="@id/postAddress"
+                />
+
             <Button
                 android:id="@+id/postContributeButton"
                 android:layout_width="match_parent"
@@ -53,6 +61,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/postContributeButton" />
 
+
+
             <ImageView
                 android:id="@+id/postUserImage"
                 android:layout_width="wrap_content"
@@ -65,12 +75,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/postUserImage"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/postAllContributers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/postUserUsername"
-                />
 
         </RelativeLayout>
 

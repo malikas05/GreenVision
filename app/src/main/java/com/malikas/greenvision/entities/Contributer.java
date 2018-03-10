@@ -6,25 +6,14 @@ package com.malikas.greenvision.entities;
 
 public class Contributer {
 
-    private String postId;
     private String userId;
 
     public Contributer(){
 
     }
 
-    public Contributer(String postId, String userId) {
-        this.postId = postId;
+    public Contributer( String userId) {
         this.userId = userId;
-    }
-
-
-    public String getPostId() {
-        return postId;
-    }
-
-    public void setPostId(String postId) {
-        this.postId = postId;
     }
 
     public String getUserId() {

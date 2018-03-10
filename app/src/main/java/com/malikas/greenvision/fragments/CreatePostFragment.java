@@ -164,8 +164,6 @@ public class CreatePostFragment extends Fragment {
         dbRef = database.getReference("Post");
         mStorageRef = FirebaseStorage.getInstance().getReference().child("post_images");
 
-
-
         return v;
     }
     //
@@ -235,10 +233,10 @@ public class CreatePostFragment extends Fragment {
             }
         });
 
-        Contributer contributer = new Contributer( pushedKey.getKey() , DataApp.getInstance().getCurrentUser().getUid() );
-        DatabaseReference contributeRefrence = database.getReference().child( "Contributer" );
-        contributeRefrence.push();
-        contributeRefrence.setValue( contributer );
+        Contributer contributer = new Contributer( DataApp.getInstance().getCurrentUser().getUid() );
+        DatabaseReference contributeRefrence = FirebaseDatabase.getInstance().getReference().child("Contributer");
+        contributeRefrence.child(pushedKey.getKey()).push().child(contributeRefrence.getKey()).setValue( contributer );
+
 
     }
 

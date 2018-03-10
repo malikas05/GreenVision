@@ -18,8 +18,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.malikas.greenvision.R;
-import com.malikas.greenvision.viewpagercards.CardPostPagerAdapter;
-import com.malikas.greenvision.viewpagercards.ShadowTransformer;
+//import com.malikas.greenvision.viewpagercards.CardPostPagerAdapter;
+//import com.malikas.greenvision.viewpagercards.ShadowTransformer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,17 +31,14 @@ import butterknife.OnClick;
 
 import static android.app.Activity.RESULT_OK;
 
-/**
- * Created by Malik on 2018-03-09.
- */
 
 public class PostFragment extends Fragment {
 
     public Callbacks listener;
-    private CardPostPagerAdapter postPagerAdapter;
-    private ShadowTransformer mCardShadowTransformer;
+//    private CardPostPagerAdapter postPagerAdapter;
+//    private ShadowTransformer mCardShadowTransformer;
 
-    @BindView(R.id.viewPagerPost)
+//    @BindView(R.id.viewPagerPost)
     ViewPager viewPagerPost;
 
     public interface Callbacks{
@@ -75,8 +72,8 @@ public class PostFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_all_posts, container, false);
-        ButterKnife.bind(this, v);
+//        View v = inflater.inflate(R.layout.fragment_all_posts, container, false);
+//        ButterKnife.bind(this, v);
 
 //        postPagerAdapter = new CardPostPagerAdapter();
 //        for (CardEmojiItem cardEmojiItem : DataApp.getInstance().getEmojis()){
@@ -90,9 +87,9 @@ public class PostFragment extends Fragment {
 //        viewPagerPost.setOffscreenPageLimit(3);
 //        viewPagerPost.setCurrentItem(2);
 
-        return v;
+ //      return v;
+        return null;
     }
     //
-
 
 }
