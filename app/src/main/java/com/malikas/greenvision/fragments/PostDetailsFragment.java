@@ -6,13 +6,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +35,7 @@ import com.malikas.greenvision.data.DataApp;
 import com.malikas.greenvision.entities.Contributer;
 import com.malikas.greenvision.entities.Post;
 import com.malikas.greenvision.entities.User;
+import com.malikas.greenvision.viewpagercards.CardAdapter;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -38,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by Malik on 2018-03-09.
@@ -45,26 +51,29 @@ import butterknife.ButterKnife;
 
 public class PostDetailsFragment extends Fragment {
 
+    public static final String POST_ID = "1";
     private DatabaseReference mDatabase;
 
     StorageReference mStorageRef;
 
+    private boolean alreadyContr = false;
 
     private TextView   postTitle;
     private TextView   postDescription;
-    private Button     postContribute;
+    private ImageButton postContribute;
     private ImageView  postImage;
     private TextView   postAddress;
-    private Button     postAddressButton;
+    private ImageButton     postAddressButton;
 
     private TextView   postUserUsername;
-    private ImageView  postUserImage;
+    private CircleImageView postUserImage;
 
     private RecyclerView postContributersList;
     private ContributerAdapter contributerAdapter;
     private List<User> dataset;
 
     public PostFragment.Callbacks listener;
+    String postID;
 
     //lifecycle methods
     @Override
@@ -87,6 +96,8 @@ public class PostDetailsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        postID = getArguments().getString(POST_ID);
+
     }
 
 
@@ -98,18 +109,17 @@ public class PostDetailsFragment extends Fragment {
 
         dataset = new ArrayList<>();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Post/-L7EGHVNjhq7OYTrXaWB");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Post/"+postID);
 
 
         postTitle = (TextView) v.findViewById(R.id.postTitle);
         postDescription = (TextView) v.findViewById(R.id.postDescription);
-        postContribute = (Button) v.findViewById(R.id.postContributeButton);
+        postContribute = (ImageButton) v.findViewById(R.id.postContributeButton);
         postImage = (ImageView) v.findViewById(R.id.postImage);
-        postAddress = (TextView) v.findViewById(R.id.postAddress);
-        postAddressButton = (Button) v.findViewById(R.id.postGoToAddressMap);
+        postAddressButton = (ImageButton) v.findViewById(R.id.postGoToAddressMap);
 
         postUserUsername = (TextView) v.findViewById(R.id.postUserUsername);
-        postUserImage = (ImageView) v.findViewById(R.id.postUserImage);
+        postUserImage = (CircleImageView) v.findViewById(R.id.postUserImage);
 
         postContributersList = ( RecyclerView ) v.findViewById(R.id.postAllContributers);
         postContributersList.setLayoutManager( new LinearLayoutManager(getActivity()));
@@ -124,7 +134,7 @@ public class PostDetailsFragment extends Fragment {
 
                 postTitle.setText( post.getTitle() );
                 postDescription.setText( post.getDescription() );
-                postAddress.setText( post.getAddress() );
+//                postAddress.setText( post.getAddress() );
 
                 DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users/"+post.getUserId());
                 userRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -184,8 +194,8 @@ public class PostDetailsFragment extends Fragment {
             }
         });
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child( "Contributer/-L7DFBuvdYjzbnqQcae2" );
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        mDatabase = FirebaseDatabase.getInstance().getReference().child( "Contributer/"+postID );
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> contributerIterable = dataSnapshot.getChildren();
@@ -227,46 +237,72 @@ public class PostDetailsFragment extends Fragment {
             }
         });
 
+        checkForContribution();
 
         postContribute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDatabase = FirebaseDatabase.getInstance().getReference().child("Contributer/-L7DFBuvdYjzbnqQcae2");
-                mDatabase.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterable<DataSnapshot> contributerIterable = dataSnapshot.getChildren();
-                        Iterator<DataSnapshot> it = contributerIterable.iterator();
-
-                        boolean alreadyContributing = false;
-                        String userId = DataApp.getInstance().getCurrentUser().getUid();
-                        while( it.hasNext() && !alreadyContributing ){
-                            Contributer contributer = it.next().child("Contributer").getValue( Contributer.class );
-                            if( contributer.getUserId() == userId ) {
-                                alreadyContributing = true;
-                            }
-                        }
-
-                        if( !alreadyContributing ) {
-                            Contributer contributer = new Contributer(DataApp.getInstance().getCurrentUser().getUid());
-                            DatabaseReference contributeRefrence = FirebaseDatabase.getInstance().getReference().child("Contributer");
-                            contributeRefrence.child("Contributer/-L7DFBuvdYjzbnqQcae2").push().child(contributeRefrence.getKey()).setValue(contributer);
-                        }
-                        else {
-                            Toast.makeText(getContext() , "You are already contributing to the post!" , Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
+//                mDatabase = FirebaseDatabase.getInstance().getReference().child("Contributer/"+postID);
+//                mDatabase.addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        Iterable<DataSnapshot> contributerIterable = dataSnapshot.getChildren();
+//                        Iterator<DataSnapshot> it = contributerIterable.iterator();
+//
+//                        boolean alreadyContributing = false;
+//                        String userId = DataApp.getInstance().getCurrentUser().getUid();
+//                        while( it.hasNext() && !alreadyContributing ){
+//                            Contributer contributer = it.next().child("Contributer").getValue( Contributer.class );
+//                            if( contributer.getUserId().equals(userId)) {
+//                                alreadyContributing = true;
+//                            }
+//                        }
+//
+//                        if( !alreadyContributing ) {
+//                            postContribute.setBackgroundResource(R.drawable.btn_upvote_green);
+//                            Contributer contributer = new Contributer(DataApp.getInstance().getCurrentUser().getUid());
+//                            DatabaseReference contributeRefrence = FirebaseDatabase.getInstance().getReference().child("Contributer");
+//                            contributeRefrence.child(postID).push().child(contributeRefrence.getKey()).setValue(contributer);
+//                        }
+//                        else {
+//                            Toast.makeText(getContext() , "You are already contributing to the post!" , Toast.LENGTH_LONG).show();
+//                        }
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
                 // check if the user is already a contributer,
                 // option one : loop through all contributer data looking for a user ID ? maybe 50 -1000 contributers?
 
 
+                if (alreadyContr){
+                    Toast.makeText(getContext() , "You are already contributing to the post!" , Toast.LENGTH_LONG).show();
+                }
+                else {
+                    postContribute.setBackgroundResource(R.drawable.btn_upvote_green);
+                    Contributer contributer = new Contributer(DataApp.getInstance().getCurrentUser().getUid());
+                    DatabaseReference contributeRefrence = FirebaseDatabase.getInstance().getReference().child("Contributer");
+                    contributeRefrence.child(postID).push().child(contributeRefrence.getKey()).setValue(contributer);
+                    DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users/"+contributer.getUserId());
+                    userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User user = dataSnapshot.getValue( User.class );
+                            dataset.add(user);
+                            //  Toast.makeText( getContext(), dataset.get(0).getPersonName() , Toast.LENGTH_LONG ).show();
+                            contributerAdapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
 
             }
         });
@@ -275,6 +311,47 @@ public class PostDetailsFragment extends Fragment {
         return v;
     }
 
+    private void checkForContribution(){
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Contributer/"+postID);
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> contributerIterable = dataSnapshot.getChildren();
+                Iterator<DataSnapshot> it = contributerIterable.iterator();
 
+                boolean alreadyContributing = false;
+                String userId = DataApp.getInstance().getCurrentUser().getUid();
+                while( it.hasNext() && !alreadyContributing ){
+                    Contributer contributer = it.next().child("Contributer").getValue( Contributer.class );
+                    if( contributer.getUserId().equals(userId)) {
+                        alreadyContributing = true;
+                    }
+                }
+
+                if( !alreadyContributing ) {
+                    postContribute.setBackgroundResource(R.drawable.btn_upvote_red);
+                    contributerAdapter.notifyDataSetChanged();
+                }
+                else {
+                    postContribute.setBackgroundResource(R.drawable.btn_upvote_green);
+                }
+                alreadyContr = alreadyContributing;
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static PostDetailsFragment newInstance(String postId){
+        Bundle args = new Bundle();
+        args.putSerializable(POST_ID, postId);
+        PostDetailsFragment fragment = new PostDetailsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
 }

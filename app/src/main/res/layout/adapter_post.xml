@@ -15,8 +15,7 @@
        android:id="@+id/postLayout"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
-       android:padding="15dp"
-       android:background="@color/colorBlack">
+       android:padding="15dp">
 
        <ImageButton
            android:id="@+id/postWorld"
@@ -37,13 +36,6 @@
            android:theme="@style/EditTextStyle"
            android:textColor="@android:color/white"
            android:text="Niagara Fall" />
-
-       <!--<Button-->
-           <!--android:id="@+id/postOpen"-->
-           <!--android:layout_width="wrap_content"-->
-           <!--android:layout_height="wrap_content"-->
-           <!--android:layout_below="@id/postImage"-->
-           <!--android:text="See more"/>-->
 
    </RelativeLayout>
 

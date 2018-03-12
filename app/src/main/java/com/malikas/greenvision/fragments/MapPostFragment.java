@@ -46,6 +46,7 @@ import com.malikas.greenvision.R;
 import com.malikas.greenvision.entities.Post;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -105,13 +106,13 @@ public class MapPostFragment extends Fragment implements OnMapReadyCallback, Goo
         View v = inflater.inflate(R.layout.fragment_all_posts_map, container, false);
         ButterKnife.bind(this, v);
 
+        loadPosts();
+
         // configuring Google Map
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
-
-        loadPosts();
 
         return v;
     }
@@ -124,11 +125,17 @@ public class MapPostFragment extends Fragment implements OnMapReadyCallback, Goo
         dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                Iterable<DataSnapshot> iterableSnap = dataSnapshot.getChildren();
+                Iterator<DataSnapshot> it = iterableSnap.iterator();
 
-                    final Post post = snapshot.getValue(Post.class);
+                while( it.hasNext() ) {
+                    DataSnapshot ds = it.next();
+                    final Post post = ds.getValue(Post.class);
+                    post.setPostId(ds.getKey());
                     posts.add(post);
                 }
+                addServicesMarkersOnMap();
+
 
             }
             @Override
@@ -159,7 +166,7 @@ public class MapPostFragment extends Fragment implements OnMapReadyCallback, Goo
                 return false;
             }
         });
-        addServicesMarkersOnMap();
+
 
         //Initialize Google Play Services
         checkPermission();

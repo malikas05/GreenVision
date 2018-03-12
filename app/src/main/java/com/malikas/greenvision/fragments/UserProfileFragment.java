@@ -3,21 +3,17 @@ package com.malikas.greenvision.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,10 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.malikas.greenvision.R;
-import com.malikas.greenvision.adapters.ContributerAdapter;
-import com.malikas.greenvision.adapters.ProfilePostAdapter;
 import com.malikas.greenvision.data.DataApp;
-import com.malikas.greenvision.entities.Contributer;
 import com.malikas.greenvision.entities.Post;
 import com.malikas.greenvision.entities.User;
 import com.squareup.picasso.Picasso;
@@ -62,12 +55,13 @@ public class UserProfileFragment extends Fragment {
     public PostFragment.Callbacks listener;
 
 
-    public static String userKey = "viiZqsKtHyRPELCeqX7ZhSmW7Di2";
+    public static String userKey = DataApp.getInstance().getCurrentUser().getUid();
 
     //lifecycle methods
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        this.listener = (PostFragment.Callbacks)context;
     }
 
     @Override
@@ -94,12 +88,12 @@ public class UserProfileFragment extends Fragment {
         View v = inflater.inflate(R.layout.user_profile_fragment, container, false);
         ButterKnife.bind(this, v);
 
-
+        mStorageRef = FirebaseStorage.getInstance().getReference();
         dataset = new ArrayList<>();
         postViews = (RecyclerView) v.findViewById(R.id.profilePostList);
         profilePostAdapter = new ProfilePostAdapter( dataset ,getContext());
 
-        postViews.setLayoutManager( new StaggeredGridLayoutManager( 2 , 1) );
+        postViews.setLayoutManager( new GridLayoutManager(getActivity(), 2) );
         postViews.setAdapter( profilePostAdapter );
 
 
@@ -117,7 +111,7 @@ public class UserProfileFragment extends Fragment {
                 profileEmail.setText( user.getEmail() );
                 profileName.setText( user.getPersonName() );
 
-                mDatabase = FirebaseDatabase.getInstance().getReference().child("Post");
+                mDatabase = FirebaseDatabase.getInstance().getReference("Post");
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -125,10 +119,22 @@ public class UserProfileFragment extends Fragment {
                         Iterator<DataSnapshot> it = iterableSnap.iterator();
 
                         while( it.hasNext() ) {
-                            Post post = it.next().getValue(Post.class);
-                            if( post.getUserId() == userKey ) {
-                                dataset.add( post );
-                                profilePostAdapter.notifyDataSetChanged();
+
+                            DataSnapshot ds = it.next();
+
+                            final Post post = ds.getValue(Post.class);
+                            if( post.getUserId().equals(userKey)) {
+                                post.setPostId(ds.getKey());
+
+                                StorageReference imageRef = mStorageRef.child("post_images/"+post.getPostId());
+                                imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        post.setImage(uri.toString());
+                                        dataset.add( post );
+                                        profilePostAdapter.notifyDataSetChanged();
+                                    }
+                                });
                             }
                         }
 
@@ -151,6 +157,66 @@ public class UserProfileFragment extends Fragment {
         return v;
     }
 
+    public class ProfilePostAdapter extends RecyclerView.Adapter<ProfilePostAdapter.ProfilePostViewHolder>{
+
+        private List<Post> dataset;
+        private Context context;
+
+        public ProfilePostAdapter( List<Post> dataset , Context context ){
+            this.dataset = dataset;
+            this.context = context;
+        }
+
+        @Override
+        public ProfilePostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+            View view = layoutInflater.inflate(R.layout.profile_post_view_holder , parent, false);
+
+            ProfilePostViewHolder viewHolderAll = new ProfilePostViewHolder(view);
+
+            return viewHolderAll;
+
+        }
+
+        @Override
+        public void onBindViewHolder(ProfilePostViewHolder holder, final int position) {
+
+            Picasso.with(context).load(this.dataset.get(position).getImage()).into(holder.postImage);
+            holder.postTitle.setText( this.dataset.get(position).getTitle() );
+            holder.postWrap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DataApp.getInstance().setPostId(dataset.get(position).getPostId());
+                    listener.changeFragment(3);
+                }
+            });
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return dataset.size();
+        }
+
+        public class ProfilePostViewHolder extends RecyclerView.ViewHolder{
+
+            RelativeLayout postWrap;
+            TextView postTitle;
+            ImageView postImage;
+
+            public ProfilePostViewHolder(View itemView) {
+                super(itemView);
+
+                postWrap = itemView.findViewById(R.id.postWrap);
+                postTitle = itemView.findViewById(R.id.postTitle);
+                postImage = itemView.findViewById(R.id.postImage);
+
+            }
+
+        }
+
+    }
 
 
 }

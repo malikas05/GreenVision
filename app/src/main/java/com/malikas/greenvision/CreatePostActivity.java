@@ -227,7 +227,6 @@ public class CreatePostActivity extends AppCompatActivity  {
                     final String download_url = task.getResult().getDownloadUrl().toString();
                     Toast.makeText(CreatePostActivity.this, download_url, Toast.LENGTH_SHORT).show();
                 }
-                hideProgressDialog();
             }
         });
 
@@ -235,7 +234,7 @@ public class CreatePostActivity extends AppCompatActivity  {
         DatabaseReference contributeRefrence = FirebaseDatabase.getInstance().getReference().child("Contributer");
         contributeRefrence.child(pushedKey.getKey()).push().child(contributeRefrence.getKey()).setValue( contributer );
 
-
+        hideProgressDialog();
     }
 
     private String getAddress(Location location){

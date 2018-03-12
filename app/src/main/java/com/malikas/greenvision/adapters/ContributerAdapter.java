@@ -14,6 +14,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 /**
  * Created by pavle on 2018-03-09.
  */
@@ -53,13 +55,13 @@ public class ContributerAdapter extends RecyclerView.Adapter< ContributerAdapter
 
     public class ContributerViewHolder extends RecyclerView.ViewHolder{
 
-        private ImageView userImage;
+        private CircleImageView userImage;
         private TextView username;
 
         public ContributerViewHolder(View itemView) {
             super(itemView);
 
-            userImage = (ImageView) itemView.findViewById(R.id.viewHoler_userImage);
+            userImage = (CircleImageView) itemView.findViewById(R.id.viewHoler_userImage);
             username  = (TextView)  itemView.findViewById(R.id.viewHolder_username);
 
         }

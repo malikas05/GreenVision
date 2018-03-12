@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="10dp">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/viewHoler_userImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
             />
 
         <TextView
             android:id="@+id/viewHolder_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/viewHoler_userImage"/>
+            android:layout_toRightOf="@id/viewHoler_userImage"
+            android:layout_alignBaseline="@id/postUserImage"
+            style="@style/TitleTextView"
+            android:textSize="19sp"
+            android:text="malikas"
+            android:textColor="@color/colorBlack"
+            android:layout_marginLeft="20dp"/>
 
 
     </RelativeLayout>

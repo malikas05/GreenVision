@@ -5,30 +5,59 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="20dp">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profilePicture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentLeft="true"
+            />
 
         <TextView
             android:id="@+id/profileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/profilePicture"/>
+            android:layout_alignParentRight="true"
+            android:layout_alignBaseline="@id/profilePicture"
+            style="@style/TitleTextView"
+            android:textSize="22sp"
+            android:text="Malik Yavari"
+            android:textColor="@color/colorBlack"
+            android:layout_marginRight="20dp"/>
 
         <TextView
             android:id="@+id/profileEmail"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:layout_below="@+id/profileName"/>
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/profileName"
+            style="@style/TitleTextView"
+            android:textSize="16sp"
+            android:text="malikiavari@gmail.com"
+            android:textColor="@color/colorBlack"
+            android:layout_marginRight="20dp"/>
+
+        <TextView
+            android:id="@+id/profilePostAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/profilePicture"
+            style="@style/TitleTextView"
+            android:textSize="22sp"
+            android:text="Posts"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginRight="20dp"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/profilePostList"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:layout_below="@id/profileEmail"/>
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/profilePostAmount"/>
         
         
     </RelativeLayout>

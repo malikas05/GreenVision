@@ -96,6 +96,12 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
 
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
 
@@ -145,16 +151,10 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
                         new SecondaryDrawerItem().withIdentifier(1)
-                                .withName("Create Post")
+                                .withName("User Profile")
                                 .withTextColor(getResources().getColor(R.color.colorBlack)),
                         new SecondaryDrawerItem().withIdentifier(2)
-                                .withName("Post Details Test")
-                                .withTextColor(getResources().getColor(R.color.colorBlack)),
-                        new SecondaryDrawerItem().withIdentifier(3)
-                                .withName("Display posts")
-                                .withTextColor(getResources().getColor(R.color.colorBlack)),
-                        new SecondaryDrawerItem().withIdentifier(4)
-                                .withName("User Profile")
+                                .withName("Log out")
                                 .withTextColor(getResources().getColor(R.color.colorBlack))
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -163,17 +163,11 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
                         drawer.closeDrawer();
                         switch ((int)drawerItem.getIdentifier()){
                             case 1:
-                                Intent signInActivity = new Intent(HomeActivity.this, CreatePostActivity.class);
-                                startActivity(signInActivity);
+                                changeFragment(4);
                                 return true;
                             case 2:
-                                changeFragment( 3 );
+                                signOut();
                                 return true;
-                            case 3:
-                                changeFragment( 1 );
-                                return true;
-                            case 4:
-                                changeFragment(4);
                             default:
                                 return true;
                         }
@@ -201,7 +195,7 @@ public class HomeActivity extends AppCompatActivity implements PostFragment.Call
             ft.replace(R.id.frame, new MapPostFragment());
         }
         else if (fragmentNum == 3) {
-            ft.replace(R.id.frame, new PostDetailsFragment());
+            ft.replace(R.id.frame, PostDetailsFragment.newInstance(DataApp.getInstance().getPostId()));
         }
         else if (fragmentNum == 4) {
             ft.replace(R.id.frame, new UserProfileFragment());

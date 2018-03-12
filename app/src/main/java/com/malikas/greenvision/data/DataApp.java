@@ -13,6 +13,7 @@ import java.util.List;
 public class DataApp {
 
     private static DataApp instance;
+    private String postId;
 
     private FirebaseUser currentUser;
 
@@ -34,5 +35,11 @@ public class DataApp {
         this.currentUser = currentUser;
     }
 
+    public String getPostId() {
+        return postId;
+    }
 
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
 }
